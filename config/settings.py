@@ -39,10 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd party
     'rest_framework',
-    'djoser',
     'django.contrib.sites',
     # Local
     'accounts',
+    'goals',
 ]
 
 MIDDLEWARE = [
@@ -133,14 +133,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
     ),
-}
-
-DJOSER = {
-    'USER_ID_FIELD': 'email',
-    'LOGIN_FIELD': 'email',
-    'SEND_ACTIVATION_EMAIL': False,  # Disable email activation for now
-    'SERIALIZERS': {},
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
 }
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 SITE_ID = 1
+
