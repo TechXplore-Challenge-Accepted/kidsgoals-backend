@@ -1,10 +1,11 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .models import Task
-from .serializers import TaskSerializer, EmptySerializer
-from .validators import validate_assigned_to, validate_task_completion, validate_task_approval
+from tasks.models import Task, Goal
+from tasks.serializers import TaskSerializer, EmptySerializer, GoalSerializer
+from tasks.validators import validate_assigned_to, validate_task_completion, validate_task_approval
 from accounts.permissions import IsAuthenticatedParent
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
@@ -45,3 +46,27 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.assigned_to.save()
         task.save()
         return Response({'status': 'task approved'})
+
+
+class GoalViewSet(viewsets.ModelViewSet):
+    queryset = Goal.objects.all()
+    serializer_class = GoalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_parent:
+            return Goal.objects.filter(kid__parent=user)
+        return Goal.objects.filter(kid=user)
+
+    def create(self, request, *args, **kwargs):
+        if request.user.is_parent:
+            return Response({'detail': 'Parents cannot create goals.'}, status=status.HTTP_403_FORBIDDEN)
+
+        if Goal.objects.filter(kid=request.user, is_achieved=False).exists():
+            return Response({'detail': 'You already have an active goal.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(kid=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

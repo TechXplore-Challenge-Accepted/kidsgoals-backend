@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # 3rd party
     'rest_framework',
     'django.contrib.sites',
+    'django_extensions',
     # Local
     'accounts',
     'tasks',

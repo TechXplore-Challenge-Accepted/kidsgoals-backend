@@ -1,11 +1,6 @@
 from rest_framework import serializers
-from .models import Task
+from tasks.models import Task, Goal
 from accounts.models import CustomUser
-from .validators import validate_assigned_to
-
-
-class EmptySerializer(serializers.Serializer):
-    pass
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -23,3 +18,13 @@ class TaskSerializer(serializers.ModelSerializer):
             if request.user.is_parent:
                 self.fields['assigned_to'].queryset = CustomUser.objects.filter(parent=request.user)
 
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        fields = ['id', 'name', 'price', 'is_achieved', 'progress']
+        read_only_fields = ['is_achieved', 'progress']
+
+
+class EmptySerializer(serializers.Serializer):
+    pass

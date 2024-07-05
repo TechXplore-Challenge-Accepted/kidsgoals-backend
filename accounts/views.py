@@ -2,9 +2,10 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser
-from .serializers import RegistrationSerializer, ParentLoginSerializer, KidLoginSerializer, EmptySerializer
-from .permissions import IsAuthenticatedParent
+from accounts.models import CustomUser
+from accounts.serializers import RegistrationSerializer, ParentLoginSerializer, KidLoginSerializer, EmptySerializer
+from accounts.permissions import IsAuthenticatedParent
+
 
 class ParentRegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -24,6 +25,7 @@ class ParentRegisterView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response({"message": "Parent registered successfully"}, status=status.HTTP_201_CREATED, headers=headers)
 
+
 class KidCreateView(GenericAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = RegistrationSerializer
@@ -41,6 +43,7 @@ class KidCreateView(GenericAPIView):
         )
         return Response({"message": "Kid account created successfully"}, status=status.HTTP_201_CREATED)
 
+
 class ParentLoginView(GenericAPIView):
     serializer_class = ParentLoginSerializer
     permission_classes = [permissions.AllowAny]
@@ -57,6 +60,7 @@ class ParentLoginView(GenericAPIView):
             return Response({"message": "Successfully logged in"}, status=200)
         return Response({"error": "Invalid credentials"}, status=400)
 
+
 class KidLoginView(GenericAPIView):
     serializer_class = KidLoginSerializer
     permission_classes = [permissions.AllowAny]
@@ -72,6 +76,7 @@ class KidLoginView(GenericAPIView):
             login(request, user)
             return Response({"message": "Successfully logged in"}, status=200)
         return Response({"error": "Invalid credentials"}, status=400)
+
 
 class LogoutView(GenericAPIView):
     serializer_class = EmptySerializer

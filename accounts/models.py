@@ -37,3 +37,12 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Check if goal is achieved
+        if not self.is_parent and hasattr(self, 'goal') and self.goal and\
+                not self.goal.is_achieved and self.balance >= self.goal.price:
+            self.goal.is_achieved = True
+            self.goal.save()
+

@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
-from .validators import validate_passwords
+from accounts.models import CustomUser
 
 
 class ParentLoginSerializer(serializers.Serializer):
