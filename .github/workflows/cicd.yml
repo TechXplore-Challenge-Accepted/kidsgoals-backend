@@ -3,7 +3,7 @@ name: Deploy Django API application
 on:
   push:
     branches:
-      - djangoversion
+      - pipeline
 
 jobs:
   build:
