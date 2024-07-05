@@ -1,0 +1,30 @@
+name: Deploy Django API application
+
+on:
+  push:
+    branches:
+      - pipeline
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout Source
+        uses: actions/checkout@v4
+      - name: Build docker image
+        run: sudo docker build -t tengoshamugia/kidsback .
+      - name: Login to docker hub
+        run: sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASS }}
+      - name: Publish image to docker hub
+        run: sudo docker push tengoshamugia/kidsback:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: sudo docker pull tengoshamugia/kidsback:latest
+      - name: Delete old container
+        run: sudo docker rm -f kidsback 
+      - name: Run docker container
+        run: sudo docker run -d -p 8000:8000 --name kidsback tengoshamugia/kidsback
