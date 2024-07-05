@@ -1,6 +1,7 @@
-from django.core.exceptions import ValidationError
+from rest_framework import serializers
 
 
-def validate_personal_id(value):
-    if len(value) != 11:
-        raise ValidationError('ID must be exactly 11 characters long')
+def validate_passwords(password, password_confirmation):
+    if password != password_confirmation:
+        raise serializers.ValidationError("Passwords do not match.")
+

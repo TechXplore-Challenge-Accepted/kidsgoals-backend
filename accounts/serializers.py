@@ -1,29 +1,31 @@
 from rest_framework import serializers
 from .models import CustomUser
+from .validators import validate_passwords
+
 
 class ParentLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
 
 class KidLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
-class ParentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'personal_id')
-        extra_kwargs = {'password': {'write_only': True}}
 
-class KidSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'personal_id')
-        extra_kwargs = {'password': {'write_only': True}}
-
-class ParentWithKidsSerializer(serializers.ModelSerializer):
-    kids = KidSerializer(many=True, read_only=True)
+class RegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    password_confirmation = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'first_name', 'last_name', 'personal_id', 'kids')
+        fields = ['email', 'password', 'password_confirmation', 'first_name', 'last_name']
+
+    def validate(self, data):
+        if data['password'] != data['password_confirmation']:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
+
+
+class EmptySerializer(serializers.Serializer):
+    pass
