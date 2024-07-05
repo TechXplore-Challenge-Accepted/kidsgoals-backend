@@ -18,9 +18,20 @@ jobs:
       - name: Publish image to docker hub
         run: sudo docker push tengoshamugia/kidsback:latest
 
-  deploy:
+  deploy-1:
     needs: build
-    runs-on: self-hosted
+    runs-on: ["self-hosted", "first"]
+    steps:
+      - name: Pull image from docker hub
+        run: sudo docker pull tengoshamugia/kidsback:latest
+      - name: Delete old container
+        run: sudo docker rm -f kidsback 
+      - name: Run docker container
+        run: sudo docker run -d -p 8000:8000 --name kidsback tengoshamugia/kidsback
+
+  deploy-2:
+    needs: build
+    runs-on: ["self-hosted", "second"]
     steps:
       - name: Pull image from docker hub
         run: sudo docker pull tengoshamugia/kidsback:latest
