@@ -1,5 +1,22 @@
+# Virtual environment
+venv/
+
+# Python cache
 __pycache__/
-.idea/
-db.sqlite3
-db.sqlite3-journal
-.venv
+*.py[cod]
+
+# Django migrations
+*.log
+*.pot
+*.pyc
+*.sqlite3
+
+# Media
+media
+
+# Static files
+staticfiles
+
+# Local environment variables
+.env
+
